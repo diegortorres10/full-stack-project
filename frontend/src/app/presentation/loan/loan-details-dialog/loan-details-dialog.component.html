@@ -1,0 +1,51 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>Payment Details - {{ data.applicantName }}</h2>
+
+  <mat-dialog-content>
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading payment details...</p>
+    </div>
+
+    <div *ngIf="errorMessage && !isLoading" class="error-container">
+      <p class="error-message">{{ errorMessage }}</p>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage && payments.length === 0" class="no-data-container">
+      <p class="no-data-message">No payments found for this loan.</p>
+    </div>
+
+    <table
+      *ngIf="!isLoading && !errorMessage && payments.length > 0"
+      mat-table
+      [dataSource]="payments"
+      class="mat-elevation-z2"
+    >
+      <ng-container matColumnDef="loanPaymentId">
+        <th mat-header-cell *matHeaderCellDef>Payment ID</th>
+        <td mat-cell *matCellDef="let payment">{{ payment.loanPaymentId }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef>Amount</th>
+        <td mat-cell *matCellDef="let payment">
+          {{ payment.amount | currency }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let payment">
+          {{ payment.createdAt | date: 'short' }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-raised-button (click)="close()">Close</button>
+  </mat-dialog-actions>
+</div>

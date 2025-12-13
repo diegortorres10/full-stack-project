@@ -23,23 +23,26 @@ export class LoanApiRepository extends LoanRepository {
   override getAllLoans(
     filters: PaginationFilter
   ): Observable<GetAllLoansResponse> {
-    throw new Error('Method not implemented.');
+    return this._loanApiService.getAllLoans(filters);
   }
+
   override createLoan(
     request: CreateLoanRequest
   ): Observable<CreateLoanResponse> {
-    throw new Error('Method not implemented.');
+    return this._loanApiService.createLoans(request);
   }
+
   override getLoanDetails(
     loanId: number,
     filters: PaginationFilter
   ): Observable<GetLoanDetailsResponse> {
-    throw new Error('Method not implemented.');
+    return this._loanApiService.getLoanDetails(loanId, filters);
   }
+
   override createLoanPayment(
     loanId: number,
     request: CreateLoanPaymentRequest
   ): Observable<CreateLoanPaymentResponse> {
-    throw new Error('Method not implemented.');
+    return this._loanApiService.createLoanPayment(loanId, request);
   }
 }
