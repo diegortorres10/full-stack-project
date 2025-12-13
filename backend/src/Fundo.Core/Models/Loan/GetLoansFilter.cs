@@ -1,14 +1,9 @@
-﻿using Fundo.DAL.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using Fundo.Core.Models.Common;
 
 namespace Fundo.Core.Models.Loan
 {
-    public class GetLoansFilter
+    public class GetLoansFilter : PaginationFilter
     {
-        // TODO: PaginationDTO
-        [Required]
-        public int PageNumber { get; set; } = 1;
-        [Required]
-        public int PageSize { get; set; } = 10;
+        // TODO: optional filters: name, amount, date, etc.
     }
 }

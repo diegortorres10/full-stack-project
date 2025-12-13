@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Fundo.Core.Models.Common;
 using Fundo.Core.Models.Loan;
 using Fundo.Core.Services;
 using Fundo.DAL;
@@ -285,6 +286,391 @@ namespace Fundo.Services.Tests.Unit.Fundo.Core.Services
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
             result.Loan!.CurrentBalance.Should().Be(result.Loan.Amount);
+        }
+
+        #endregion
+
+        #region GetLoanDetailsAsync Tests
+
+        [Fact]
+        public async Task GetLoanDetailsAsync_WithValidLoanId_ShouldReturnSuccessWithPayments()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("GetLoanDetails_WithPayments");
+
+            var loan = new Loan
+            {
+                LoanId = 1,
+                ApplicantName = "John Doe",
+                Amount = 50000.00m,
+                CurrentBalance = 30000.00m,
+                Status = LoanStatus.Active,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var payments = new List<LoanPayment>
+            {
+                new LoanPayment
+                {
+                    LoanPaymentId = 1,
+                    LoanId = 1,
+                    Amount = 10000.00m,
+                    CreatedAt = DateTime.UtcNow.AddDays(-10)
+                },
+                new LoanPayment
+                {
+                    LoanPaymentId = 2,
+                    LoanId = 1,
+                    Amount = 10000.00m,
+                    CreatedAt = DateTime.UtcNow.AddDays(-5)
+                }
+            };
+
+            context.Loans.Add(loan);
+            context.LoanPayments.AddRange(payments);
+            await context.SaveChangesAsync();
+
+            var service = new LoanService(context);
+            var pagination = new PaginationFilter();
+
+            // Act
+            var result = await service.GetLoanDetailsAsync(1, pagination);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeTrue();
+            result.Message.Should().Be("Loan payments retrieved successfully");
+            result.Details.Should().HaveCount(2);
+        }
+
+        [Fact]
+        public async Task GetLoanDetailsAsync_WithNonExistentLoan_ShouldReturnError()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("GetLoanDetails_NonExistent");
+            var service = new LoanService(context);
+            var pagination = new PaginationFilter();
+
+            // Act
+            var result = await service.GetLoanDetailsAsync(999, pagination);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeFalse();
+            result.Message.Should().Be("Loan doesn't exists. Check the information");
+        }
+
+        [Fact]
+        public async Task GetLoanDetailsAsync_WithNoPayments_ShouldReturnSuccessWithEmptyList()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("GetLoanDetails_NoPayments");
+
+            var loan = new Loan
+            {
+                LoanId = 1,
+                ApplicantName = "Jane Doe",
+                Amount = 50000.00m,
+                CurrentBalance = 50000.00m,
+                Status = LoanStatus.Active,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Loans.Add(loan);
+            await context.SaveChangesAsync();
+
+            var service = new LoanService(context);
+            var pagination = new PaginationFilter();
+
+            // Act
+            var result = await service.GetLoanDetailsAsync(1, pagination);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeTrue();
+            result.Message.Should().Be("No loan payments have been recorded yet");
+            result.Details.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GetLoanDetailsAsync_WithPagination_ShouldReturnCorrectPage()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("GetLoanDetails_Pagination");
+
+            var loan = new Loan
+            {
+                LoanId = 1,
+                ApplicantName = "Test User",
+                Amount = 100000.00m,
+                CurrentBalance = 50000.00m,
+                Status = LoanStatus.Active,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var payments = Enumerable.Range(1, 15).Select(i => new LoanPayment
+            {
+                LoanPaymentId = i,
+                LoanId = 1,
+                Amount = 5000.00m,
+                CreatedAt = DateTime.UtcNow.AddDays(-i)
+            }).ToList();
+
+            context.Loans.Add(loan);
+            context.LoanPayments.AddRange(payments);
+            await context.SaveChangesAsync();
+
+            var service = new LoanService(context);
+            var pagination = new PaginationFilter { PageNumber = 2, PageSize = 5 };
+
+            // Act
+            var result = await service.GetLoanDetailsAsync(1, pagination);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeTrue();
+            result.Details.Should().HaveCount(5);
+            result.TotalItems.Should().Be(15);
+        }
+
+        #endregion
+
+        #region CreateLoanPaymentAsync Tests
+
+        [Fact]
+        public async Task CreateLoanPaymentAsync_WithValidRequest_ShouldCreatePaymentSuccessfully()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("CreatePayment_Success");
+
+            var loan = new Loan
+            {
+                LoanId = 1,
+                ApplicantName = "John Doe",
+                Amount = 50000.00m,
+                CurrentBalance = 50000.00m,
+                Status = LoanStatus.Active,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Loans.Add(loan);
+            await context.SaveChangesAsync();
+
+            var service = new LoanService(context);
+            var request = new CreateLoanPaymentRequest
+            {
+                Amount = 10000.00m
+            };
+
+            // Act
+            var result = await service.CreateLoanPaymentAsync(1, request);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeTrue();
+            result.Message.Should().Be("Loan payment created successfully");
+            result.LoanPayment.Should().NotBeNull();
+            result.LoanPayment!.Amount.Should().Be(10000.00m);
+
+            // Verify balance was updated
+            var updatedLoan = await context.Loans.FindAsync(1L);
+            updatedLoan!.CurrentBalance.Should().Be(40000.00m);
+            updatedLoan.Status.Should().Be(LoanStatus.Active);
+        }
+
+        [Fact]
+        public async Task CreateLoanPaymentAsync_WithZeroAmount_ShouldReturnError()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("CreatePayment_ZeroAmount");
+
+            var loan = new Loan
+            {
+                LoanId = 1,
+                ApplicantName = "John Doe",
+                Amount = 50000.00m,
+                CurrentBalance = 50000.00m,
+                Status = LoanStatus.Active,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Loans.Add(loan);
+            await context.SaveChangesAsync();
+
+            var service = new LoanService(context);
+            var request = new CreateLoanPaymentRequest
+            {
+                Amount = 0
+            };
+
+            // Act
+            var result = await service.CreateLoanPaymentAsync(1, request);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeFalse();
+            result.Message.Should().Be("Amount must be greater than 0");
+        }
+
+        [Fact]
+        public async Task CreateLoanPaymentAsync_WithNonExistentLoan_ShouldReturnError()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("CreatePayment_NonExistentLoan");
+            var service = new LoanService(context);
+            var request = new CreateLoanPaymentRequest
+            {
+                Amount = 10000.00m
+            };
+
+            // Act
+            var result = await service.CreateLoanPaymentAsync(999, request);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeFalse();
+            result.Message.Should().Be("Loan doesn't exists. Check the information");
+        }
+
+        [Fact]
+        public async Task CreateLoanPaymentAsync_WithAmountExceedingBalance_ShouldReturnError()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("CreatePayment_ExceedingBalance");
+
+            var loan = new Loan
+            {
+                LoanId = 1,
+                ApplicantName = "John Doe",
+                Amount = 50000.00m,
+                CurrentBalance = 20000.00m,
+                Status = LoanStatus.Active,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Loans.Add(loan);
+            await context.SaveChangesAsync();
+
+            var service = new LoanService(context);
+            var request = new CreateLoanPaymentRequest
+            {
+                Amount = 30000.00m
+            };
+
+            // Act
+            var result = await service.CreateLoanPaymentAsync(1, request);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeFalse();
+            result.Message.Should().Contain("exceeds current balance");
+        }
+
+        [Fact]
+        public async Task CreateLoanPaymentAsync_WithPaidLoan_ShouldReturnError()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("CreatePayment_PaidLoan");
+
+            var loan = new Loan
+            {
+                LoanId = 1,
+                ApplicantName = "John Doe",
+                Amount = 50000.00m,
+                CurrentBalance = 0.00m,
+                Status = LoanStatus.Paid,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Loans.Add(loan);
+            await context.SaveChangesAsync();
+
+            var service = new LoanService(context);
+            var request = new CreateLoanPaymentRequest
+            {
+                Amount = 10000.00m
+            };
+
+            // Act
+            var result = await service.CreateLoanPaymentAsync(1, request);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeFalse();
+            result.Message.Should().Be("This loan has already been paid in full");
+        }
+
+        [Fact]
+        public async Task CreateLoanPaymentAsync_WhenPaymentCompletesLoan_ShouldUpdateStatusToPaid()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("CreatePayment_CompleteLoan");
+
+            var loan = new Loan
+            {
+                LoanId = 1,
+                ApplicantName = "John Doe",
+                Amount = 50000.00m,
+                CurrentBalance = 10000.00m,
+                Status = LoanStatus.Active,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Loans.Add(loan);
+            await context.SaveChangesAsync();
+
+            var service = new LoanService(context);
+            var request = new CreateLoanPaymentRequest
+            {
+                Amount = 10000.00m
+            };
+
+            // Act
+            var result = await service.CreateLoanPaymentAsync(1, request);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeTrue();
+
+            // Verify loan status was updated to Paid
+            var updatedLoan = await context.Loans.FindAsync(1L);
+            updatedLoan!.CurrentBalance.Should().Be(0.00m);
+            updatedLoan.Status.Should().Be(LoanStatus.Paid);
+        }
+
+        [Fact]
+        public async Task CreateLoanPaymentAsync_ShouldSavePaymentToDatabase()
+        {
+            // Arrange
+            using var context = GetInMemoryDbContext("CreatePayment_SaveToDb");
+
+            var loan = new Loan
+            {
+                LoanId = 1,
+                ApplicantName = "Jane Smith",
+                Amount = 75000.00m,
+                CurrentBalance = 75000.00m,
+                Status = LoanStatus.Active,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Loans.Add(loan);
+            await context.SaveChangesAsync();
+
+            var service = new LoanService(context);
+            var request = new CreateLoanPaymentRequest
+            {
+                Amount = 15000.00m
+            };
+
+            // Act
+            var result = await service.CreateLoanPaymentAsync(1, request);
+
+            // Assert
+            var savedPayment = await context.LoanPayments.FirstOrDefaultAsync(p => p.LoanId == 1);
+            savedPayment.Should().NotBeNull();
+            savedPayment!.Amount.Should().Be(15000.00m);
+            savedPayment.LoanId.Should().Be(1);
         }
 
         #endregion
