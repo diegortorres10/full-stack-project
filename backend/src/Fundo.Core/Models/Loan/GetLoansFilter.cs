@@ -4,6 +4,8 @@ namespace Fundo.Core.Models.Loan
 {
     public class GetLoansFilter : PaginationFilter
     {
-        // TODO: optional filters: name, amount, date, etc.
+        public string? ApplicantName { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

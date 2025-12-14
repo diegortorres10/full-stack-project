@@ -22,6 +22,21 @@ namespace Fundo.Applications.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // CORS configuration from appsettings
+            var allowedOrigins = Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+            if (allowedOrigins != null && allowedOrigins.Length > 0)
+            {
+                services.AddCors(options =>
+                {
+                    options.AddPolicy("CorsPolicy", builder =>
+                    {
+                        builder.WithOrigins(allowedOrigins)
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+                });
+            }
+
             // SQL Server DbContext setttings with retry in azure
             services.AddDbContext<FundoDbContext>(options =>
                 options.UseSqlServer(
@@ -49,6 +64,7 @@ namespace Fundo.Applications.WebApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors("CorsPolicy");
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());

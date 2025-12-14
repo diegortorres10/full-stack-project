@@ -23,6 +23,24 @@ namespace Fundo.Core.Services
             {
                 var query = _context.Loans.AsQueryable();
 
+                // Filters
+                if (!string.IsNullOrWhiteSpace(filter.ApplicantName))
+                {
+                    query = query.Where(l => l.ApplicantName.ToLower().Contains(filter.ApplicantName.ToLower()));
+                }
+
+                if (filter.StartDate.HasValue)
+                {
+                    var fromDate = filter.StartDate.Value.Date;
+                    query = query.Where(l => l.CreatedAt.Date >= fromDate);
+                }
+
+                if (filter.EndDate.HasValue)
+                {
+                    var toDate = filter.EndDate.Value.Date.AddDays(1).AddSeconds(-1);
+                    query = query.Where(e => e.CreatedAt <= toDate);
+                }
+
                 // DEfault sort by createdAt
                 query = query.OrderByDescending(l => l.CreatedAt);
 
