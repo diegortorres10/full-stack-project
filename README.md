@@ -1,83 +1,304 @@
-# **Take-Home Test: Backend-Focused Full-Stack Developer (.NET C# & Angular)**
+# Fundo - Loan Management System
 
-## **Objective**
+Full-stack loan management system built with **.NET Core 6.0** backend and **Angular 19** frontend, implementing clean architecture and industry best practices.
 
-This take-home test evaluates your ability to develop and integrate a .NET Core (C#) backend with an Angular frontend, focusing on API design, database integration, and basic DevOps practices.
+## 1. Backend - REST API (.NET Core 6.0)
 
-## **Instructions**
+### Directory Structure
 
-1.  **Fork the provided repository** before starting the implementation.
-2.  Implement the requested features in your forked repository.
-3.  Once you have completed the implementation, **send the link** to your forked repository via email for review.
+```
+backend/src/
+├── Fundo.Applications.WebApi/          # PRESENTATION LAYER
+│   ├── Controllers/                    # REST controllers
+│   ├── Program.cs & Startup.cs         # App configuration
+│
+├── Fundo.Core/                         # BUSINESS LAYER
+│   ├── Interfaces/                     # Service contracts
+│   ├── Models/                         # Domain models & DTOs
+│   └── Services/                       # Business logic implementation
+│
+├── Fundo.DAL/                          # DATA ACCESS LAYER
+│   ├── Entities/                       # Database entities (Loan, Payment)
+│   ├── Enums/                          # Enumerations (LoanStatus)
+│   └── Context/                        # Entity Framework DbContext
+│
+├── Fundo.Services.Tests/               # TESTS
+│   └── Integration/                    # Integration tests
+│
+├── Dockerfile                          # Docker configuration
+├── docker-compose.yml                  # Orchestration
+├── .env & .env.example                 # Environment variables
+├── README.md                           # Development guide
+└── DEPLOYMENT.md                       # Render.com deployment guide
+```
 
-## **Task**
+### Three-Layer Architecture
 
-You will build a simple **Loan Management System** with a **.NET Core backend (C#)** exposing RESTful APIs and a **basic Angular frontend** consuming these APIs.
+```
+┌─────────────────────────────────────────┐
+│   PRESENTATION (WebApi)                 │
+│   Controllers → HTTP Request/Response   │
+└─────────────────┬───────────────────────┘
+                  ↓
+┌─────────────────────────────────────────┐
+│   BUSINESS (Core)                       │
+│   Services → Business Logic             │
+└─────────────────┬───────────────────────┘
+                  ↓
+┌─────────────────────────────────────────┐
+│   DATA ACCESS (DAL)                     │
+│   Entities → Database Operations        │
+└─────────────────────────────────────────┘
+```
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/loans` | List loans with filters and pagination |
+| `GET` | `/loans/{id}` | Get loan details with payment history |
+| `POST` | `/loans` | Create a new loan |
+| `POST` | `/loans/{id}/payment` | Register a payment |
+
+**Available filters:** `pageNumber`, `pageSize`, `applicantName`, `startDate`, `endDate`
+
+### Deployment
+
+#### Local Development with Docker
+
+```bash
+cd backend/src
+
+# Configure environment
+cp .env.example .env
+
+# Start services (API + SQL Server)
+docker-compose up -d
+
+# API available at http://localhost:5000
+```
+
+#### Production Deployment on Render.com
+
+1. **Push to Git**
+   ```bash
+   git push origin main
+   ```
+
+2. **Create Web Service on Render.com**
+   - Root Directory: `backend/src`
+   - Environment: `Docker`
+   - Instance Type: `Free`
+
+3. **Configure Environment Variables**
+   - `ASPNETCORE_ENVIRONMENT` = `Production`
+   - `ConnectionStrings__DefaultConnection` = Your Azure SQL connection string
+
+4. **Deploy** - Wait 3-5 minutes for deployment
+
+### Environment Configuration
+
+#### `.env` File (Local Development)
+
+```env
+# Connection String
+# Option 1: Local SQL Server (Docker)
+DATABASE_CONNECTION_STRING=Server=sqlserver,1433;Initial Catalog=FundoDB;User ID=sa;Password=YourStrongPassword123!;...
+
+# Option 2: Azure SQL (Production)
+# DATABASE_CONNECTION_STRING=Server=your-server.database.windows.net,1433;Initial Catalog=your-db;User ID=user;Password=pass;...
+
+ASPNETCORE_ENVIRONMENT=Development
+```
+
+#### Render.com Variables (Production)
+
+| Variable | Value |
+|----------|-------|
+| `ASPNETCORE_ENVIRONMENT` | `Production` |
+| `ASPNETCORE_URLS` | `http://0.0.0.0:80` |
+| `ConnectionStrings__DefaultConnection` | Your Azure SQL connection string |
 
 ---
 
-## **Requirements**
+### 1.2. Pending Features in API
 
-### **1. Backend (API) - .NET Core**
-
-* Create a **RESTful API** in .NET Core to handle **loan applications**.
-* Implement the following endpoints:
-    * `POST /loans` → Create a new loan.
-    * `GET /loans/{id}` → Retrieve loan details.
-    * `GET /loans` → List all loans.
-    * `POST /loans/{id}/payment` → Deduct from `currentBalance`.
-* Loan example (feel free to improve it):
-
-    ```json
-    {
-        "amount": 1500.00, // Amount requested
-        "currentBalance": 500.00, // Remaining balance
-        "applicantName": "Maria Silva", // User name
-        "status": "active" // Status can be active or paid
-    }
-    ```
-
-* Use **Entity Framework Core** with **SQL Server**.
-* Create seed data to populate the loans (the frontend will consume this).
-* Write **unit/integration tests for the API** (xUnit or NUnit).
-* **Dockerize** the backend and create a **Docker Compose** file.
-* Create a README with setup instructions.
-
-### **2. Frontend - Angular (Simplified UI)**  
-
-Develop a **lightweight Angular app** to interact with the backend
-
-#### **Features:**  
-- A **table** to display a list of existing loans.  
-
-#### **Mockup:**  
-[View Mockup](https://kzmgtjqt0vx63yji8h9l.lite.vusercontent.net/)  
-(*The design doesn’t need to be an exact replica of the mockup—it serves as a reference. Aim to keep it as close as possible.*)  
+#### 1. Authentication & Authorization
+#### 2. Swagger/OpenAPI Documentation
+#### 3. Error Handling & Logging Middleware
+#### 4. Soft Delete & Audit Fields
 
 ---
 
-## **Bonus (Optional, Not Required)**
+## 2. Frontend - Web Application (Angular 19)
 
-* **Improve error handling and logging** with structured logs.
-* Implement **authentication**.
-* Create a **GitHub Actions** pipeline for building and testing the backend.
+### Directory Structure
+
+```
+frontend/src/app/
+├── core/                               # BUSINESS LOGIC
+│   ├── config/                         # Configuration (API URLs)
+│   ├── models/                         # Interfaces & models
+│   ├── repositories/                   # Repository interfaces
+│   └── use-cases/                      # Application use cases
+│
+├── infraestructure/                    # INFRASTRUCTURE
+│   ├── repositories/                   # Repository implementations
+│   └── services/                       # API services (HttpClient)
+│
+├── presentation/                       # UI COMPONENTS
+│   └── loan/
+│       ├── loan-list/                  # Loan list component
+│       ├── loan-details-dialog/        # Details modal
+│       ├── create-loan-dialog/         # Create loan modal (pending)
+│       └── create-payment-dialog/      # Payment modal (pending)
+│
+└── environments/                       # ENVIRONMENT CONFIG
+    ├── environment.ts                  # Production
+    └── environment.development.ts      # Development
+```
+
+### Clean Architecture (Frontend)
+
+```
+┌───────────────────────────────────────────┐
+│   PRESENTATION (Components)               │
+│   UI Logic & Templates                    │
+└───────────────┬───────────────────────────┘
+                ↓
+┌───────────────────────────────────────────┐
+│   USE CASES (Application Logic)           │
+│   Orchestration & Business Rules          │
+└───────────────┬───────────────────────────┘
+                ↓
+┌───────────────────────────────────────────┐
+│   REPOSITORIES (Interfaces)               │
+│   Data Access Abstractions                │
+└───────────────┬───────────────────────────┘
+                ↓
+┌───────────────────────────────────────────┐
+│   INFRASTRUCTURE (Implementations)        │
+│   API Services & HTTP Calls               │
+└───────────────────────────────────────────┘
+```
+
+**Benefits:** Testable, maintainable, scalable, framework-independent
+
+### Implemented Components
+
+1. **LoanListComponent** - Paginated loan list with filters
+2. **LoanDetailsDialogComponent** - Loan details with payment history
+
+### Environment Configuration
+
+```typescript
+// environment.ts (Production)
+export const environment = {
+  production: true,
+  apiUrl: 'https://your-api.onrender.com'
+};
+
+// environment.development.ts (Development)
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:5000'
+};
+```
+
+### Run Frontend
+
+#### Local Development
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Development server (port 4200)
+npm start
+
+# Production build
+npm run build
+```
+
+#### Deploy to Vercel
+
+1. **Push to Git**
+   ```bash
+   git push origin main
+   ```
+
+2. **Import Project on Vercel**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "Add New Project"
+   - Import your Git repository
+   - Vercel auto-detects Angular configuration
+
+3. **Configure Environment Variables**
+   - Add `VITE_API_URL` or configure in `environment.ts`
+   - Set API URL to your Render backend
+
+4. **Deploy** - Vercel automatically builds and deploys
+
+Your app will be live at: `https://your-app.vercel.app`
 
 ---
 
-## **Evaluation Criteria**
+### 2.2. Pending Features in Frontend
 
-✔ **Code quality** (clean architecture, modularization, best practices).
+#### 1. Global Error Handling (Interceptors)
+#### 2. Loan & Payment Management Improvements (validations)
 
-✔ **Functionality** (the API and frontend should work as expected).
+## Quick Start
 
-✔ **Security considerations** (authentication, validation, secure API handling).
+### Backend (API)
 
-✔ **Testing coverage** (unit tests for critical backend functions).
+```bash
+cd backend/src
+cp .env.example .env
+docker-compose up -d
+curl http://localhost:5000/loans
+```
 
-✔ **Basic DevOps implementation** (Docker for backend).
+### Frontend (Web)
+
+```bash
+cd frontend
+npm install
+npm start
+# Open http://localhost:4200
+```
 
 ---
 
-## **Additional Information**
+## Tech Stack
 
-Candidates are encouraged to include a `README.md` file in their repository detailing their implementation approach, any challenges they faced, features they couldn't complete, and any improvements they would make given more time. Ideally, the implementation should be completed within **two days** of starting the test.
+### Backend
+- .NET Core 6.0 - Web framework
+- Entity Framework Core - ORM
+- SQL Server - Database
+- xUnit - Testing
+- Docker - Containerization
+
+### Frontend
+- Angular 19 - SPA framework
+- Angular Material - UI components
+- RxJS - Reactive programming
+- TypeScript - Type-safe JavaScript
+- SCSS - Styling
+
+### DevOps
+- Docker & Docker Compose - Backend containerization
+- Render.com - Backend hosting
+- Vercel - Frontend hosting & deployment
+
+---
+
+## Architecture Decisions
+
+1. **Three-Layer Architecture (Backend)** - Clear separation: presentation, business, data
+2. **Clean Architecture (Frontend)** - Framework-independent, testable
+3. **Repository Pattern** - Data access abstraction
+4. **Use Case Pattern** - Application logic encapsulation
+5. **DTO Pattern** - Separation between domain and transfer models
