@@ -1,0 +1,61 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>Register Payment</h2>
+
+  <div class="loan-info">
+    <div class="info-row">
+      <mat-icon>person</mat-icon>
+      <span class="label">Applicant:</span>
+      <span class="value">{{ data.applicantName }}</span>
+    </div>
+    <div class="info-row">
+      <mat-icon>account_balance</mat-icon>
+      <span class="label">Loan Amount:</span>
+      <span class="value">{{ data.loanAmount | currency }}</span>
+    </div>
+    <div class="info-row">
+      <mat-icon>payments</mat-icon>
+      <span class="label">Current Balance:</span>
+      <span class="value balance">{{ data.currentBalance | currency }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content>
+    <form [formGroup]="paymentForm" class="payment-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Payment Amount</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="amount"
+          placeholder="Enter payment amount"
+          required
+        />
+        <mat-icon matPrefix>attach_money</mat-icon>
+        <mat-hint>Maximum: {{ data.currentBalance | currency }}</mat-hint>
+        <mat-error *ngIf="paymentForm.get('amount')?.invalid">
+          {{ getErrorMessage('amount') }}
+        </mat-error>
+      </mat-form-field>
+
+      <div *ngIf="errorMessage" class="error-message">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
+      Cancel
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="isSubmitting || paymentForm.invalid"
+    >
+      <mat-spinner *ngIf="isSubmitting" diameter="20" class="button-spinner"></mat-spinner>
+      <span *ngIf="!isSubmitting">Register Payment</span>
+    </button>
+  </mat-dialog-actions>
+</div>

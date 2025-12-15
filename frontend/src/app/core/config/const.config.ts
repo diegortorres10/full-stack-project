@@ -1,2 +1,3 @@
-// TODO: config pr environment
-export const API_BASE_URL = 'https://localhost:57746';
+import { environment } from '../../../environments/environment';
+
+export const API_BASE_URL = environment.apiUrl;

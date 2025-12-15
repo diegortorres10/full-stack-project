@@ -1,10 +1,18 @@
 import { Observable } from 'rxjs';
 import { PaginationFilter } from '../models/common';
-import { CreateLoanPaymentRequest, CreateLoanPaymentResponse, CreateLoanRequest, CreateLoanResponse, GetAllLoansResponse, GetLoanDetailsResponse } from '../models/loan';
+import {
+  CreateLoanPaymentRequest,
+  CreateLoanPaymentResponse,
+  CreateLoanRequest,
+  CreateLoanResponse,
+  GetAllLoansResponse,
+  GetLoanDetailsResponse,
+  GetLoanFilterInterface,
+} from '../models/loan';
 
 export abstract class LoanRepository {
   abstract getAllLoans(
-    filters: PaginationFilter
+    filters: GetLoanFilterInterface
   ): Observable<GetAllLoansResponse>;
 
   abstract createLoan(

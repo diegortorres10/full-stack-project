@@ -10,6 +10,7 @@ import {
   CreateLoanResponse,
   GetAllLoansResponse,
   GetLoanDetailsResponse,
+  GetLoanFilterInterface,
 } from '../../core/models/loan';
 
 @Injectable({
@@ -21,7 +22,7 @@ export class LoanApiRepository extends LoanRepository {
   }
 
   override getAllLoans(
-    filters: PaginationFilter
+    filters: GetLoanFilterInterface
   ): Observable<GetAllLoansResponse> {
     return this._loanApiService.getAllLoans(filters);
   }

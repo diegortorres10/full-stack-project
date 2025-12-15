@@ -9,6 +9,7 @@ import {
   CreateLoanResponse,
   GetAllLoansResponse,
   GetLoanDetailsResponse,
+  GetLoanFilterInterface,
 } from '../models/loan';
 
 @Injectable({
@@ -17,7 +18,9 @@ import {
 export class LoanUseCase {
   constructor(private _loanRepository: LoanRepository) {}
 
-  getAllLoans(filters: PaginationFilter): Observable<GetAllLoansResponse> {
+  getAllLoans(
+    filters: GetLoanFilterInterface
+  ): Observable<GetAllLoansResponse> {
     return this._loanRepository.getAllLoans(filters);
   }
 

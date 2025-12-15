@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>Create New Loan</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="loanForm" class="loan-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Applicant Name</mat-label>
+      <input
+        matInput
+        formControlName="applicantName"
+        placeholder="Enter applicant name"
+        required
+      />
+      <mat-icon matPrefix>person</mat-icon>
+      <mat-error *ngIf="loanForm.get('applicantName')?.invalid">
+        {{ getErrorMessage('applicantName') }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Loan Amount</mat-label>
+      <input
+        matInput
+        type="number"
+        formControlName="amount"
+        placeholder="Enter loan amount"
+        required
+      />
+      <mat-icon matPrefix>attach_money</mat-icon>
+      <mat-error *ngIf="loanForm.get('amount')?.invalid">
+        {{ getErrorMessage('amount') }}
+      </mat-error>
+    </mat-form-field>
+
+    <div *ngIf="errorMessage" class="error-message">
+      <mat-icon>error</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="isSubmitting || loanForm.invalid"
+  >
+    <mat-spinner *ngIf="isSubmitting" diameter="20" class="button-spinner"></mat-spinner>
+    <span *ngIf="!isSubmitting">Create Loan</span>
+  </button>
+</mat-dialog-actions>

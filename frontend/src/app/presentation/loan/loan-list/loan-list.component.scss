@@ -7,8 +7,51 @@
   padding: 20px;
 
   &--container {
-    width: 60%;
+    width: 90%;
   }
+}
+
+.filters-container {
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+
+  .filters-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .filters-fields {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      flex: 1;
+      flex-wrap: wrap;
+
+      .filter-field {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .filter-button {
+        margin-top: 8px;
+        height: 40px;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+  }
+}
+
+.table-container {
+  width: 100%;
 }
 
 .loading-container {
@@ -77,6 +120,28 @@
   .loans {
     &--container {
       width: 100%;
+    }
+  }
+
+  .filters-container {
+    .filters-row {
+      flex-direction: column;
+
+      .filters-fields {
+        width: 100%;
+
+        .filter-field {
+          width: 100%;
+        }
+      }
+
+      .action-buttons {
+        width: 100%;
+
+        button {
+          flex: 1;
+        }
+      }
     }
   }
 }

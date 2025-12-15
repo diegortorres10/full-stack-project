@@ -9,6 +9,7 @@ import {
   CreateLoanResponse,
   GetAllLoansResponse,
   GetLoanDetailsResponse,
+  GetLoanFilterInterface,
 } from '../../core/models/loan';
 import { PaginationFilter } from '../../core/models/common';
 
@@ -20,16 +21,19 @@ export class LoanApiService {
 
   constructor(private _http: HttpClient) {}
 
-  getAllLoans(filters: PaginationFilter): Observable<GetAllLoansResponse> {
+  getAllLoans(
+    filters: GetLoanFilterInterface
+  ): Observable<GetAllLoansResponse> {
     return this._http.get<GetAllLoansResponse>(`${this.baseUrl}/loans`, {
-      params: this._buildParams(filters),
+      params: this._buildLoansParams(filters),
     });
   }
 
   createLoans(request: CreateLoanRequest): Observable<CreateLoanResponse> {
-    return this._http.post<CreateLoanResponse>(`${this.baseUrl}/loans`, {
-      request,
-    });
+    return this._http.post<CreateLoanResponse>(
+      `${this.baseUrl}/loans`,
+      request
+    );
   }
 
   getLoanDetails(
@@ -50,9 +54,7 @@ export class LoanApiService {
   ): Observable<CreateLoanPaymentResponse> {
     return this._http.post<CreateLoanPaymentResponse>(
       `${this.baseUrl}/loans/${loanId}/payment`,
-      {
-        request,
-      }
+      request
     );
   }
 
@@ -62,5 +64,29 @@ export class LoanApiService {
       .set('pageSize', filters.pageSize.toString());
 
     return params;
+  }
+
+  private _buildLoansParams(filters: GetLoanFilterInterface): HttpParams {
+    let params = new HttpParams()
+      .set('pageNumber', filters.pageNumber.toString())
+      .set('pageSize', filters.pageSize.toString());
+
+    if (filters.applicantName) {
+      params = params.set('applicantName', filters.applicantName);
+    }
+
+    if (filters.startDate) {
+      params = params.set('startDate', this._formatDate(filters.startDate));
+    }
+
+    if (filters.endDate) {
+      params = params.set('endDate', this._formatDate(filters.endDate));
+    }
+
+    return params;
+  }
+
+  private _formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 }
