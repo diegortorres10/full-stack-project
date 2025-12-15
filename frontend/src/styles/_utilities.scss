@@ -1,0 +1,43 @@
+@use './variables' as *;
+
+// Width utilities
+.full-width {
+  width: 100%;
+}
+
+// Text utilities
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: $color-text-muted;
+}
+
+// Status badges - using Material color palette classes
+// These leverage Angular Material's built-in color system
+.status-active {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: $border-radius-lg;
+  background-color: rgba(63, 81, 181, 0.1); // Material Indigo 50 equivalent
+  color: #3f51b5; // Material Indigo 500
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-paid {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: $border-radius-lg;
+  background-color: rgba(76, 175, 80, 0.1); // Material Green 50 equivalent
+  color: #4caf50; // Material Green 500
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+// Spinner
+.button-spinner {
+  display: inline-block;
+  margin-right: $spacing-sm;
+}

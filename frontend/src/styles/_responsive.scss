@@ -1,0 +1,122 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+// Container responsive
+.container {
+  width: 90%;
+  margin: 0 auto;
+  padding: 20px;
+
+  @include respond-to('lg') {
+    width: 95%;
+  }
+
+  @include respond-to('md') {
+    width: 100%;
+    padding: 16px;
+  }
+
+  @include respond-to('sm') {
+    padding: 12px;
+  }
+}
+
+// Filters container responsive
+.filters-container {
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: $color-background-light;
+  border-radius: $border-radius-md;
+
+  @include respond-to('md') {
+    padding: 16px;
+  }
+
+  @include respond-to('sm') {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .filters-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    @include respond-to('lg') {
+      flex-direction: column;
+    }
+
+    .filters-fields {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      flex: 1;
+      flex-wrap: wrap;
+
+      @include respond-to('lg') {
+        width: 100%;
+      }
+
+      .filter-field {
+        flex: 1;
+        min-width: 200px;
+
+        @include respond-to('md') {
+          min-width: 150px;
+        }
+
+        @include respond-to('sm') {
+          width: 100%;
+          min-width: unset;
+        }
+      }
+
+      .filter-button {
+        margin-top: 8px;
+        height: 40px;
+
+        @include respond-to('sm') {
+          width: 100%;
+        }
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+
+      @include respond-to('lg') {
+        width: 100%;
+      }
+
+      @include respond-to('sm') {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Page container
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+
+  @include respond-to('md') {
+    padding: 16px;
+  }
+
+  @include respond-to('sm') {
+    padding: 12px;
+  }
+}

@@ -1,0 +1,35 @@
+// Text colors (Material default text colors)
+$color-text-primary: rgba(0, 0, 0, 0.87);
+$color-text-secondary: rgba(0, 0, 0, 0.60);
+$color-text-muted: rgba(0, 0, 0, 0.54);
+
+// Border and background (Material neutral colors)
+$color-border: rgba(0, 0, 0, 0.12);
+$color-background-light: #f5f5f5;
+$color-background-lighter: #fafafa;
+
+// Spacing
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-xxl: 2.5rem;
+
+// Border radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+
+// Breakpoints
+$breakpoint-xs: 480px;
+$breakpoint-sm: 600px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
+// Dialog widths
+$dialog-min-width-sm: 300px;
+$dialog-min-width-md: 400px;
+$dialog-min-width-lg: 500px;
+$dialog-max-width: 700px;

@@ -1,7 +1,8 @@
-<h2 mat-dialog-title>Create New Loan</h2>
+<div class="dialog-container dialog-container--md">
+  <h2 mat-dialog-title>Create New Loan</h2>
 
-<mat-dialog-content>
-  <form [formGroup]="loanForm" class="loan-form">
+  <mat-dialog-content>
+    <form [formGroup]="loanForm" class="dialog-form">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Applicant Name</mat-label>
       <input
@@ -52,3 +53,4 @@
     <span *ngIf="!isSubmitting">Create Loan</span>
   </button>
 </mat-dialog-actions>
+</div>

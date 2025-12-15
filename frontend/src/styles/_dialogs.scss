@@ -1,0 +1,195 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+// Dialog containers
+.dialog-container {
+  min-width: $dialog-min-width-lg;
+  max-width: $dialog-max-width;
+
+  @include respond-to('md') {
+    min-width: $dialog-min-width-md;
+  }
+
+  @include respond-to('sm') {
+    min-width: $dialog-min-width-sm;
+    max-width: 95vw;
+  }
+
+  &--sm {
+    min-width: $dialog-min-width-md;
+
+    @include respond-to('sm') {
+      min-width: $dialog-min-width-sm;
+    }
+  }
+
+  &--md {
+    min-width: $dialog-min-width-md;
+
+    @include respond-to('sm') {
+      min-width: $dialog-min-width-sm;
+    }
+  }
+
+  &--lg {
+    min-width: $dialog-min-width-lg;
+    max-width: $dialog-max-width;
+
+    @include respond-to('sm') {
+      min-width: $dialog-min-width-sm;
+      max-width: 95vw;
+    }
+  }
+}
+
+// Dialog header
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid $color-border;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+
+    @include respond-to('sm') {
+      font-size: 1.25rem;
+    }
+  }
+
+  .register-payment-btn {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-right: 5px;
+
+    mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    @include respond-to('sm') {
+      .button-text {
+        display: none;
+      }
+    }
+  }
+}
+
+// Dialog title
+h2[mat-dialog-title] {
+  margin: 0 0 $spacing-md 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: $color-text-primary;
+
+  @include respond-to('sm') {
+    font-size: 1.25rem;
+  }
+}
+
+// Dialog content
+mat-dialog-content {
+  padding: 20px 0;
+  min-height: 200px;
+
+  @include respond-to('sm') {
+    padding: 16px 0;
+  }
+}
+
+// Dialog actions
+mat-dialog-actions {
+  border-top: 1px solid $color-border;
+  margin: 0;
+  padding: 16px 0;
+
+  @include respond-to('sm') {
+    padding: 12px 0;
+
+    button {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Dialog forms
+.dialog-form,
+.loan-form,
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-md 0;
+
+  @include respond-to('sm') {
+    gap: 0.75rem;
+  }
+}
+
+// Loan info card
+.loan-info {
+  @include card-container;
+  margin-bottom: $spacing-md;
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $color-border;
+    }
+
+    mat-icon {
+      color: $color-text-secondary;
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .label {
+      font-weight: 500;
+      color: $color-text-secondary;
+      min-width: 120px;
+
+      @include respond-to('sm') {
+        min-width: 80px;
+        font-size: 0.875rem;
+      }
+    }
+
+    .value {
+      color: $color-text-primary;
+      font-weight: 400;
+
+      &.balance {
+        font-weight: 600;
+        color: #1976d2; // Material Blue 700
+        font-size: 1.1rem;
+
+        @include respond-to('sm') {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    @include respond-to('sm') {
+      flex-wrap: wrap;
+
+      .label {
+        width: 100%;
+        margin-bottom: 0.25rem;
+      }
+
+      .value {
+        width: 100%;
+      }
+    }
+  }
+}

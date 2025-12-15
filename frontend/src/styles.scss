@@ -1,4 +1,14 @@
+// @use rules must come first, before any @import or other rules
 @use '@angular/material' as mat;
+@use './styles/variables' as *;
+@use './styles/mixins' as *;
+@use './styles/utilities';
+@use './styles/common';
+@use './styles/tables';
+@use './styles/dialogs';
+@use './styles/responsive';
+
+// @import for prebuilt themes (these are CSS imports, not SCSS modules)
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
 html,

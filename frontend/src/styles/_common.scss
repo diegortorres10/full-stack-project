@@ -1,0 +1,68 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+// Loading container
+.loading-container {
+  @include flex-column-center;
+  padding: 40px;
+  gap: 20px;
+
+  p {
+    margin: 0;
+    color: $color-text-muted;
+    font-size: 16px;
+
+    @include respond-to('sm') {
+      font-size: 14px;
+    }
+  }
+}
+
+// Error container - using Material warn/error colors
+.error-container {
+  @include flex-column-center;
+  padding: 40px;
+  gap: 20px;
+
+  .error-message {
+    color: #f44336; // Material Red 500
+    font-size: 16px;
+    margin: 0;
+    text-align: center;
+
+    @include respond-to('sm') {
+      font-size: 14px;
+    }
+  }
+}
+
+// Error message banner - using Material error colors
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  color: #c62828; // Material Red 800
+  background-color: #ffebee; // Material Red 50
+  padding: 0.75rem;
+  border-radius: $border-radius-sm;
+  font-size: 0.875rem;
+
+  mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+// No data container
+.no-data-container {
+  @include flex-column-center;
+  padding: 40px;
+
+  .no-data-message {
+    color: $color-text-muted;
+    font-size: 14px;
+    margin: 0;
+    text-align: center;
+  }
+}

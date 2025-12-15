@@ -1,0 +1,54 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+// Material table styles
+.mdc-data-table {
+  &__table {
+    margin-top: 20px;
+    border: 1px solid $color-border;
+    border-radius: $border-radius-sm;
+  }
+
+  &__header-cell {
+    color: $color-text-muted;
+  }
+}
+
+// Generic table styles
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    margin-top: 16px;
+
+    th {
+      font-weight: 600;
+      color: $color-text-muted;
+      white-space: nowrap;
+    }
+
+    td {
+      color: $color-text-primary;
+    }
+  }
+
+  // Responsive table
+  @include respond-to('md') {
+    table {
+      font-size: 0.875rem;
+    }
+  }
+
+  @include respond-to('sm') {
+    table {
+      font-size: 0.813rem;
+
+      th,
+      td {
+        padding: 8px 4px;
+      }
+    }
+  }
+}
