@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "name": "fundo-frontend",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/loan-project/browser",
+  "devCommand": "npm start",
+  "installCommand": "npm install",
+  "framework": "angular",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
